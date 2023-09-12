@@ -4,4 +4,4 @@
 https://docs.google.com/document/d/1pLralr3xtTKwSYBwriYUH38n1B5vgeEcuHMl0IdKqyY/edit?usp=sharing
 
 # Team
-Wenkai Chen, Stanescu Raluca
+Wenkai Chen, Stanescu Raluca, Frederieke Blom
