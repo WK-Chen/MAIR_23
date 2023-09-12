@@ -5,3 +5,4 @@ https://docs.google.com/document/d/1pLralr3xtTKwSYBwriYUH38n1B5vgeEcuHMl0IdKqyY/
 
 # Team
 Wenkai Chen
+Stanescu Raluca
