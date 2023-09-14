@@ -46,10 +46,15 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15, random
 def baseline_classifier2(input_text):
   if input_text.find('i m looking for') or input_text.find('i am looking for') or input_text.find('any type')or input_text.find('moderate price') or input_text.find('restaurant') or input_text.find('i dont care') or input_text.find('spanish') or input_text.find('spanish food') or input_text.find('moderate') :
     return 'inform'
-    return 'null'
-  if  input_text.find('what is') or input_text.find('what type') or input_text.find('whats')or input_text.find('do you have') or input_text.find('can i have') or input_text.find('can i get') :
-    return 'request'
-    return 'null'
+    
+  if input_text.find('what is') or input_text.find('what type') or input_text.find('whats') or input_text.find('do you have') or input_text.find('can i have') or input_text.find('can i get') :
+    return 'request'  
+  if input_text.find('thank you'):
+    return 'thankyou'   
+  if input_text.find('how about') or input_text.find('what about') or input_text.find('anything else'):
+    return 'reqalts'
+  if input_text.find('cough') or input_text.find('noise') or input_text.find('sil') or input_text.find('unintelligible'):
+    return 'null' 
 
 
 # Test any baseline classifier on the test data
