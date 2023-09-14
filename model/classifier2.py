@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 from utils import *
 
+# turn label to number
 label_dic = {
     "ack": 0,
     "affirm": 1,
@@ -60,37 +61,21 @@ class DSTCDataset(Dataset):
 
         return inputs
 
-def train():
-    ...
-
-def evaluate():
-    ...
-
-if __name__ == '__main__':
-    # Load your pre-trained BERT model and tokenizer
-    model_name = 'bert-base-uncased'
-    tokenizer = BertTokenizer.from_pretrained(model_name)
-    model = BertForSequenceClassification.from_pretrained(model_name, num_labels=15)
-
+def train(model):
     # Define hyperparameters
     batch_size = 16
     learning_rate = 2e-5
     epochs = 5
 
-    # Create data loaders for training and validation
+    # Create data loaders for training
     train_dataset = DSTCDataset("dialog_acts.csv", tokenizer)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-
-    validation_dataset = DSTCDataset("dialog_acts.csv", tokenizer, 'test')
-    validation_loader = DataLoader(validation_dataset, batch_size=batch_size)
 
     # Define loss function and optimizer
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate)
 
     # Training loop
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model.to(device)
     model.train()
 
     for epoch in range(epochs):
@@ -110,6 +95,15 @@ if __name__ == '__main__':
 
         average_loss = total_loss / len(train_loader)
         print(f"Epoch {epoch + 1}/{epochs}, Loss: {average_loss:.4f}")
+    return model
+
+def evaluate(model):
+    # Define hyperparameters
+    batch_size = 16
+
+    # Create data loaders for test
+    validation_dataset = DSTCDataset("dialog_acts.csv", tokenizer, 'test')
+    validation_loader = DataLoader(validation_dataset, batch_size=batch_size)
 
     # Validation loop
     model.eval()
@@ -128,3 +122,14 @@ if __name__ == '__main__':
 
         accuracy = correct / total
         print(f"Validation Accuracy: {accuracy:.4f}")
+
+
+if __name__ == '__main__':
+    model_name = 'bert-base-uncased'
+    tokenizer = BertTokenizer.from_pretrained(model_name)
+    model = BertForSequenceClassification.from_pretrained(model_name, num_labels=15)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+
+    model = train(model)
+    evaluate(model)
