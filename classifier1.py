@@ -46,6 +46,10 @@ def evaluate(classifier, X_test, y_test):
 
 
 if __name__ == "__main__":
+    # Paths of the stored data
+    data_path = "./data/dialog_acts.csv"
+    data_path_dedup = "./data/dialog_acts_dedup.csv"
+
     # bag of words
     vectorizer = CountVectorizer()
 
@@ -53,10 +57,12 @@ if __name__ == "__main__":
     # classifier =   SVC(kernel="linear", C=0.025)
     classifier = KNeighborsClassifier(3)
 
-    X_train, X_test, y_train, y_test = process("data/dialog_acts.csv")
+    X_train, X_test, y_train, y_test = process(data_path_dedup)
 
     classifier = train(classifier, X_train, y_train)
     evaluate(classifier, X_test, y_test)
+
+    # Start diaglogue
     while True:
         user_input = input("User: ")
         if user_input == "":
@@ -67,4 +73,4 @@ if __name__ == "__main__":
         transformed_inputs = vectorizer.transform(user_inputs)
         # Make predictions using the classifier
         predictions = classifier.predict(transformed_inputs)
-        print(predictions)
+        print(predictions[0])
