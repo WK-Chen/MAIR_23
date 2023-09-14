@@ -1,4 +1,4 @@
-import csv
+from utils import *
 
 
 def dat_to_csv(input_path, output_path):
@@ -13,24 +13,6 @@ def dat_to_csv(input_path, output_path):
     save_csv(output_path, data)
 
 
-def load_csv(path: str):
-    data = []
-    # Open the CSV file and read its contents
-    with open(path, 'r') as f:
-        csv_reader = csv.reader(f)
-        data = [row for row in csv_reader]
-    return data
-
-
-def save_csv(path: str, data):
-    # Write the data to a CSV file
-    with open(path, 'w', newline='') as f:
-        csvwriter = csv.writer(f)
-        csvwriter.writerows(data)
-
-    print(f"Conversion complete. Data saved in '{path}'.")
-
-
 def deduplicate(input, output):
     # Create a new .csv file for dataset without duplication
     data = load_csv(input)
@@ -41,7 +23,11 @@ def deduplicate(input, output):
     save_csv(output, data_dedup)
 
 
+# We may change .csv format to .jsonl format later
+
 if __name__ == '__main__':
     data_path = './data/dialog_acts.dat'
     # dat_to_csv(data_path, "./data/dialog_acts.csv")
     # deduplicate(data_path, "./data/dialog_acts_dedup.csv")
+    data = load_csv("./data/dialog_acts.csv")
+    print(data[0])
