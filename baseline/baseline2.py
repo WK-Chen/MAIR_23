@@ -47,6 +47,10 @@ def baseline_classifier2(input_text):
   if input_text.find('i m looking for') or input_text.find('i am looking for') or input_text.find('any type')or input_text.find('moderate price') or input_text.find('restaurant') or input_text.find('i dont care') or input_text.find('spanish') or input_text.find('spanish food') or input_text.find('moderate') :
     return 'inform'
     return 'null'
+  if  input_text.find('what is') or input_text.find('what type') or input_text.find('whats')or input_text.find('do you have') or input_text.find('can i have') or input_text.find('can i get') :
+    return 'request'
+    return 'null'
+
 
 # Test any baseline classifier on the test data
 correct_predictions = 0
