@@ -52,6 +52,19 @@ if __name__ == "__main__":
     # classifier = MultinomialNB()
     # classifier =   SVC(kernel="linear", C=0.025)
     classifier = KNeighborsClassifier(3)
-    X_train, X_test, y_train, y_test = process("../data/dialog_acts.csv")
+
+    X_train, X_test, y_train, y_test = process("data/dialog_acts.csv")
+
     classifier = train(classifier, X_train, y_train)
     evaluate(classifier, X_test, y_test)
+    while True:
+        user_input = input("User: ")
+        if user_input == "":
+            break
+        # Preprocess user input, for example, by creating a list of user inputs
+        user_inputs = [user_input]
+        # Transform the user inputs using the vectorizer
+        transformed_inputs = vectorizer.transform(user_inputs)
+        # Make predictions using the classifier
+        predictions = classifier.predict(transformed_inputs)
+        print(predictions)
