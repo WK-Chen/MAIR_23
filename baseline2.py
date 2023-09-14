@@ -36,23 +36,26 @@ X = df['Sentence'].astype(str)
 y = df['Label']
 
 #print(y) - this was just to check that the labels are split correctly
+
 # the random state is that the split is done in the same way every time the code is being run
 # so that we don t have to make separate files for the data splits
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15, random_state=42)
 
-# Determine the majority class label
-majority_class = y.value_counts().idxmax()
-
-# Function that always predicts the majority class label
-def baseline_classifier1(input_text):
-    return majority_class
+# for the second baseline I think it would be best if the rules are written in descending order from the most used label to the least one, so that the chances of a correct classification increases
+#so first we have inform than any other, that should ensure that we start from a 40% accuracy w this classifier too
+def baseline_classifier2(input_text):
+  if input_text.find('i m looking for') or input_text.find('i am looking for') or input_text.find('any type')or input_text.find('moderate price') or input_text.find('restaurant') or input_text.find('i dont care') or input_text.find('spanish') or input_text.find('spanish food') or input_text.find('moderate') :
+    return 'inform'
+    return 'null'
 
 # Test any baseline classifier on the test data
 correct_predictions = 0
 total_predictions = len(y_test)
 
 for sentence, true_label in zip(X_test, y_test):
- if true_label == 'inform':  
+    # the next 2 lines are for the 2nd classifier
+    predicted_label = baseline_classifier2(sentence) 
+    if predicted_label == true_label:
         correct_predictions += 1
 
 print(f'Accuracy on test data: {correct_predictions / total_predictions}')
