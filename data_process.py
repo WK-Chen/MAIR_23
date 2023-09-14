@@ -9,7 +9,7 @@ def dat_to_csv(input_path, output_path):
             parts = line.strip().split(' ', 1)
             if len(parts) == 2:
                 tag, sentence = parts
-                data.append([tag, sentence])
+                data.append([tag.lower(), sentence.lower()])
     save_csv(output_path, data)
 
 
