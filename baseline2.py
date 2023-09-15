@@ -27,9 +27,46 @@ from utils import *
 
 
 def baseline_classifier2(it):
-    if it.find("food"):
+    if not it.find("thank"):
+        return "thankyou"
+    elif not it.find("food"):
         return "inform"
-    return "T"
+    elif not it.find("else"):
+        return "reqalts"
+    elif not it.find("about"):
+        return "reqalts"
+    elif not it.find("what"):
+        return "request"
+    elif not it.find("phone"):
+        return "request"
+    elif not it.find("adress"):
+        return "request"
+    elif not it.find("post"):
+        return "request"
+    elif not it.find("type"):
+        return "request"
+    elif not it.find("kind"):
+        return "request"
+    elif not it.find("price"):
+        return "request"
+    elif not it.find("where"):
+        return "request"
+    elif not it.find("area"):
+        return "request"
+    elif not it.find("unintelligible"):
+        return "null"
+    elif not it.find("cough"):
+        return "null"
+    elif not it.find("sil"):
+        return "null"
+    elif not it.find("noise"):
+        return "null"
+    elif not it.find("inaudible"):
+        return "null"
+    elif not it.find("yes"):
+        return "affirm"
+    else:
+        return "inform"
 
 
 # Define paths
@@ -55,13 +92,14 @@ print(f"Accuracy on test data: {correct_predictions / total_predictions}")
 
 print(y_train.value_counts(), y_predicted.value_counts())
 
+ul = y_train.unique()
 
-confusion = confusion_matrix(y_train, y_predicted)
+confusion = confusion_matrix(y_train, y_predicted,labels=ul)
 
 
 disp = ConfusionMatrixDisplay(
     confusion_matrix=confusion,
-    display_labels=set(pd.concat([y_train.drop_duplicates(), pd.Series(["T"])])),
+    display_labels=ul,
 )
 disp.plot()
 plt.show()
