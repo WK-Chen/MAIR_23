@@ -8,7 +8,7 @@ from tqdm import tqdm
 from utils import *
 
 # turn label to number
-label_dic = {
+label_to_seq = {
     "ack": 0,
     "affirm": 1,
     "bye": 2,
@@ -25,6 +25,8 @@ label_dic = {
     "restart": 13,
     "thankyou": 14,
 }
+
+seq_to_label = {v: k for k, v in label_to_seq.items()}
 
 class DSTCDataset(Dataset):
     def __init__(self, path, tokenizer, dataset='trn'):
@@ -50,7 +52,7 @@ class DSTCDataset(Dataset):
     def __getitem__(self, idx):
         item = self.data[idx]
         text = item['text']
-        label = label_dic[item['label']]
+        label = label_to_seq[item['label']]
         encoding = self.tokenizer(text, truncation=True, padding='max_length', max_length=64, return_tensors='pt')
 
         inputs = {
@@ -131,11 +133,17 @@ def interaction(tokenizer, model):
             break
         # Preprocess user input, for example, by creating a list of user inputs
         user_inputs = [user_input]
-        # Transform the user inputs using the vectorizer
-        transformed_inputs = vectorizer.transform(user_inputs)
+        # Transform the user inputs using encoding
+        encoding = tokenizer(user_inputs, truncation=True, padding='max_length', max_length=64, return_tensors='pt')
+
+        input_ids = encoding['input_ids'].squeeze().to(device),
+        attention_mask = encoding['attention_mask'].squeeze().to(device)
+
         # Make predictions using the classifier
-        predictions = classifier.predict(transformed_inputs)
-        print(predictions[0])
+        outputs = model(input_ids, attention_mask=attention_mask)
+        predicted = torch.argmax(outputs.logits, dim=1)
+        print(predicted)
+        print(seq_to_label[predicted])
 
 if __name__ == '__main__':
     model_name = 'bert-base-uncased'
