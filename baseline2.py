@@ -13,17 +13,17 @@ from sklearn.neighbors import KNeighborsClassifier
 from utils import *
 
 
-def process(path):
-    # Load saved dataet into df
-    df = pd.DataFrame(load_csv(path), columns=["Label", "Sentence"])
-
-    # split the dataset into training 85% and testing 15%
-    X = df["Sentence"]
-    y = df["Label"]
-
-    # the random state is that the split is done in the same way every time the code is being run
-    # so that we don t have to make separate files for the data splits
-    return train_test_split(X, y, test_size=0.15, random_state=42)
+# def process(path):
+#     # Load saved dataet into df
+#     df = pd.DataFrame(load_csv(path), columns=["Label", "Sentence"])
+#
+#     # split the dataset into training 85% and testing 15%
+#     X = df["Sentence"]
+#     y = df["Label"]
+#
+#     # the random state is that the split is done in the same way every time the code is being run
+#     # so that we don t have to make separate files for the data splits
+#     return train_test_split(X, y, test_size=0.15, random_state=42)
 
 
 def baseline_classifier2(it):
@@ -36,7 +36,7 @@ def baseline_classifier2(it):
 data_path = "./data/dialog_acts.csv"
 data_path_dedup = "./data/dialog_acts_dedup.csv"
 
-X_train, X_test, y_train, y_test = process(data_path)
+X_train, X_test, y_train, y_test = split_dataset_pd(data_path)
 
 # Test any baseline classifier on the test data
 correct_predictions = 0

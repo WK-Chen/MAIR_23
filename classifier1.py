@@ -13,17 +13,17 @@ import matplotlib.pyplot as plt
 from utils import *
 
 
-def process(path):
-    # Load saved dataet into df
-    df = pd.DataFrame(load_csv(path), columns=["Label", "Sentence"])
-
-    # split the dataset into training 85% and testing 15%
-    X = df["Sentence"]
-    y = df["Label"]
-
-    # the random state is that the split is done in the same way every time the code is being run
-    # so that we don t have to make separate files for the data splits
-    return train_test_split(X, y, test_size=0.15, random_state=42)
+# def process(path):
+#     # Load saved dataet into df
+#     df = pd.DataFrame(load_csv(path), columns=["Label", "Sentence"])
+#
+#     # split the dataset into training 85% and testing 15%
+#     X = df["Sentence"]
+#     y = df["Label"]
+#
+#     # the random state is that the split is done in the same way every time the code is being run
+#     # so that we don t have to make separate files for the data splits
+#     return train_test_split(X, y, test_size=0.15, random_state=42)
 
 
 def train(classifier, X_train, y_train):
@@ -52,6 +52,19 @@ def evaluate(classifier, X_test, y_test, classes):
     disp.plot()
     plt.show()
 
+def interaction(vectorizer, classifier):
+    # Start diaglogue
+    while True:
+        user_input = input("User: ")
+        if user_input == "":
+            break
+        # Preprocess user input, for example, by creating a list of user inputs
+        user_inputs = [user_input]
+        # Transform the user inputs using the vectorizer
+        transformed_inputs = vectorizer.transform(user_inputs)
+        # Make predictions using the classifier
+        predictions = classifier.predict(transformed_inputs)
+        print(predictions[0])
 
 if __name__ == "__main__":
     # Paths of the stored data
@@ -65,20 +78,10 @@ if __name__ == "__main__":
     # classifier =   SVC(kernel="linear", C=0.025)
     classifier = KNeighborsClassifier(3)
 
-    X_train, X_test, y_train, y_test = process(data_path)
+    X_train, X_test, y_train, y_test = split_dataset_pd(data_path)
 
     classifier = train(classifier, X_train, y_train)
     evaluate(classifier, X_test, y_test, classifier.classes_)
 
-    # Start diaglogue
-    while True:
-        user_input = input("User: ")
-        if user_input == "":
-            break
-        # Preprocess user input, for example, by creating a list of user inputs
-        user_inputs = [user_input]
-        # Transform the user inputs using the vectorizer
-        transformed_inputs = vectorizer.transform(user_inputs)
-        # Make predictions using the classifier
-        predictions = classifier.predict(transformed_inputs)
-        print(predictions[0])
+    # predict with human input
+    interaction(vectorizer, classifier)

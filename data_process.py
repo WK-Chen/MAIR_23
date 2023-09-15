@@ -11,7 +11,7 @@ def dat_to_csv(input_path, output_path):
             if len(parts) == 2:
                 tag, sentence = parts
                 data.append([tag.lower(), sentence.lower()])
-    random.shuffle(data)
+    # random.shuffle(data)
     save_csv(output_path, data)
 
 
@@ -22,7 +22,7 @@ def deduplicate(input, output):
     for sample in data:
         if sample not in data_dedup:
             data_dedup.append(sample)
-    random.shuffle(data_dedup)
+    # random.shuffle(data_dedup)
     save_csv(output, data_dedup)
 
 
@@ -35,8 +35,8 @@ if __name__ == "__main__":
     data_path_dedup = "./data/dialog_acts_dedup.csv"
 
     # Create the csv datasets
-    # dat_to_csv(orig_data_path, data_path)
-    # deduplicate(data_path, data_path_dedup)
+    dat_to_csv(orig_data_path, data_path)
+    deduplicate(data_path, data_path_dedup)
 
     # Load the datasets
     data = load_csv("./data/dialog_acts.csv")

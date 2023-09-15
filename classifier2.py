@@ -123,6 +123,19 @@ def evaluate(model):
         accuracy = correct / total
         print(f"Validation Accuracy: {accuracy:.4f}")
 
+def interaction(tokenizer, model):
+    # Start diaglogue
+    while True:
+        user_input = input("User: ")
+        if user_input == "":
+            break
+        # Preprocess user input, for example, by creating a list of user inputs
+        user_inputs = [user_input]
+        # Transform the user inputs using the vectorizer
+        transformed_inputs = vectorizer.transform(user_inputs)
+        # Make predictions using the classifier
+        predictions = classifier.predict(transformed_inputs)
+        print(predictions[0])
 
 if __name__ == '__main__':
     model_name = 'bert-base-uncased'
@@ -133,3 +146,6 @@ if __name__ == '__main__':
 
     model = train(model)
     evaluate(model)
+
+    # predict with human input
+    # interaction()

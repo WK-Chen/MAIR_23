@@ -11,23 +11,23 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from utils import *
 
-
-def process(path):
-    # Load saved dataet into df
-    df = pd.DataFrame(load_csv(path), columns=["Label", "Sentence"])
-
-    # split the dataset into training 85% and testing 15%
-    X = df["Sentence"]
-    y = df["Label"]
-
-    # the random state is that the split is done in the same way every time the code is being run
-    # so that we don t have to make separate files for the data splits
-    return train_test_split(X, y, test_size=0.15, random_state=42)
+#
+# def process(path):
+#     # Load saved dataet into df
+#     df = pd.DataFrame(load_csv(path), columns=["Label", "Sentence"])
+#
+#     # split the dataset into training 85% and testing 15%
+#     X = df["Sentence"]
+#     y = df["Label"]
+#
+#     # the random state is that the split is done in the same way every time the code is being run
+#     # so that we don t have to make separate files for the data splits
+#     return train_test_split(X, y, test_size=0.15, random_state=42)
 
 
 def train_and_evaluate(path):
     # Get ready data from path of saved file
-    X_train, X_test, y_train, y_test = process(path)
+    X_train, X_test, y_train, y_test = split_dataset_pd(path)
 
     # Determine the majority class label
     majority_class = y_train.value_counts().idxmax()
