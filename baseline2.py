@@ -27,43 +27,43 @@ from utils import *
 
 
 def baseline_classifier2(it):
-    if not it.find("thank"):
+    if it.find("thank") != -1:
         return "thankyou"
-    elif not it.find("food"):
+    elif it.find("food") != -1:
         return "inform"
-    elif not it.find("else"):
+    elif it.find("else") != -1:
         return "reqalts"
-    elif not it.find("about"):
+    elif it.find("about") != -1:
         return "reqalts"
-    elif not it.find("what"):
+    elif it.find("what") != -1:
         return "request"
-    elif not it.find("phone"):
+    elif it.find("phone") != -1:
         return "request"
-    elif not it.find("adress"):
+    elif it.find("adress") != -1:
         return "request"
-    elif not it.find("post"):
+    elif it.find("post") != -1:
         return "request"
-    elif not it.find("type"):
+    elif it.find("type") != -1:
         return "request"
-    elif not it.find("kind"):
+    elif it.find("kind") != -1:
         return "request"
-    elif not it.find("price"):
+    elif it.find("price") != -1:
         return "request"
-    elif not it.find("where"):
+    elif it.find("where") != -1:
         return "request"
-    elif not it.find("area"):
+    elif it.find("area") != -1:
         return "request"
-    elif not it.find("unintelligible"):
+    elif it.find("unintelligible") != -1:
         return "null"
-    elif not it.find("cough"):
+    elif it.find("cough") != -1:
         return "null"
-    elif not it.find("sil"):
+    elif it.find("sil") != -1:
         return "null"
-    elif not it.find("noise"):
+    elif it.find("noise") != -1:
         return "null"
-    elif not it.find("inaudible"):
+    elif it.find("inaudible") != -1:
         return "null"
-    elif not it.find("yes"):
+    elif it.find("yes") != -1:
         return "affirm"
     else:
         return "inform"
