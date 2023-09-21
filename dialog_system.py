@@ -19,7 +19,7 @@ def prediction(utterance: str):
 
 # Define system responses
 system_responses = {
-    "welcome_message": "Hello , welcome! You can ask for restaurants by area , price range or food type.",
+    "welcome_message": "Hello , welcome! You can ask for restaurants by area , price range or food type. How can I help?",
     "ask_food_type": "What kind of food would you like?",
     "ask_area": "What part of town do you have in mind?",
     "ask_price_range": "What is your preferred price range? Would you like something in the cheap , moderate , or expensive price range?",
@@ -43,6 +43,49 @@ dialog_state = {
     "food_type": None,
 }
 
+
+# Define dialog states
+DIALOG_STATE_INITIAL = 0
+DIALOG_STATE_CUISINE = 1
+DIALOG_STATE_CUISINE_CONFIRMATION = 2
+DIALOG_STATE_LOCATION = 3
+DIALOG_STATE_LOCATION_CONFIRMATION = 4
+DIALOG_STATE_PRICE_RANGE = 5
+DIALOG_STATE_PRICE_RANGE_CONFIRMATION = 6
+# Fill in all other required ones
+DIALOG_END = -1
+
+
+
+
+
+
+
+
 # The state_transition function managing the conversation
 def state_transition(dialog_state, user_utterance):
+    return None
+        
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+# The system
+current_state = DIALOG_STATE_INITIAL
+print("System: ", system_responses["welcome_message"])
+while current_state != DIALOG_END:
+    user_input = input("User: ").lower()
+    current_state, system_response = state_transition(current_state, user_input)
+    print("System: ", system_response)
