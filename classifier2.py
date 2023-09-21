@@ -70,7 +70,7 @@ def train(model):
     epochs = 5
 
     # Create data loaders for training
-    train_dataset = DSTCDataset("dialog_acts.csv", tokenizer)
+    train_dataset = DSTCDataset("data/dialog_acts.csv", tokenizer)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
     # Define loss function and optimizer
@@ -104,7 +104,7 @@ def evaluate(model):
     batch_size = 16
 
     # Create data loaders for test
-    validation_dataset = DSTCDataset("dialog_acts.csv", tokenizer, 'test')
+    validation_dataset = DSTCDataset("data/dialog_acts.csv", tokenizer, 'test')
     validation_loader = DataLoader(validation_dataset, batch_size=batch_size)
 
     # Validation loop
