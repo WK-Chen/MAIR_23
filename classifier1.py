@@ -26,7 +26,7 @@ from utils import *
 #     return train_test_split(X, y, test_size=0.15, random_state=42)
 
 
-def train(classifier, X_train, y_train):
+def train(vectorizer, classifier, X_train, y_train):
     """KNN has the best accuracy - 0.97, but all that I tested were good >0.94 but I m not sure ab the other metrics,
     it might do overfitting you can test with any classifier from scikit learn by importing the model above and then
     using it here directly, but I don t think we should focus on that
@@ -39,7 +39,7 @@ def train(classifier, X_train, y_train):
     return classifier
 
 
-def evaluate(classifier, X_test, y_test, classes):
+def evaluate(vectorizer, classifier, X_test, y_test, classes):
     X_test = vectorizer.transform(X_test)
     y_predicted = classifier.predict(X_test)
 
@@ -58,13 +58,11 @@ def interaction(vectorizer, classifier):
         user_input = input("User: ")
         if user_input == "":
             break
-        # Preprocess user input, for example, by creating a list of user inputs
-        user_inputs = [user_input]
-        # Transform the user inputs using the vectorizer
-        transformed_inputs = vectorizer.transform(user_inputs)
-        # Make predictions using the classifier
-        predictions = classifier.predict(transformed_inputs)
-        print(predictions[0])
+        print(predict(user_input))
+
+def predict(utterance : str, classifier, vectorizer):
+    return classifier.predict(vectorizer.transform([utterance]))[0]
+
 
 if __name__ == "__main__":
     # Paths of the stored data
@@ -80,8 +78,8 @@ if __name__ == "__main__":
 
     X_train, X_test, y_train, y_test = split_dataset_pd(data_path)
 
-    classifier = train(classifier, X_train, y_train)
-    evaluate(classifier, X_test, y_test, classifier.classes_)
+    classifier = train(vectorizer, classifier, X_train, y_train)
+    evaluate(vectorizer, classifier, X_test, y_test, classifier.classes_)
 
     # predict with human input
     interaction(vectorizer, classifier)
