@@ -1,10 +1,11 @@
-# MAIR_23
+# MAIR Group 23
 
-# Google Doc
-https://docs.google.com/document/d/1pLralr3xtTKwSYBwriYUH38n1B5vgeEcuHMl0IdKqyY/edit?usp=sharing
-
-# Team
+## Team
 Wenkai Chen, Stanescu Raluca, Frederieke Blom, Niek Kemp, Dimitra Tsolka
 
-# TODO
-upload 2 baselines to baseline folder 
+## Part 1a
+Run baseline1.py, baseline2.py, classifier1.py, classifier2.py to see the results for the two baselines and two classifier
+
+## Part 1b
+
+## Part 1c
