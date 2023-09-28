@@ -1,3 +1,5 @@
+import time
+
 from transitions import Machine
 from classifier1 import *
 from utils import *
@@ -11,7 +13,7 @@ food_type = ["british", "modern european", "italian", "romanian", "chinese", "se
              "jamaican", "lebanese", 'cuban', "catalan"]
 area = ["east", "south", "centre", "north", "west"]
 price_range = ["cheap", "moderate", "expensive"]
-
+additional = ["touristic", "assigned", "children", "romantic"]
 
 def prediction(classifier, vectorizer, utterance: str):
     res = predict(utterance, classifier, vectorizer)
@@ -19,23 +21,50 @@ def prediction(classifier, vectorizer, utterance: str):
 
 def search_restaurants(data, filter):
     res = data[
-        (data['pricerange'] == filter['price_range']) & (data['area'] == filter['area']) & (
-                    data['food'] == filter['food_type'])
+        (data['pricerange'] == filter['price_range']) &
+        (data['area'] == filter['area']) &
+        (data['food'] == filter['food_type'])
         ]
     return res
 
+def filter_restaurants(data, filter):
+    if filter['addition'] == "touristic":
+        res = data[
+            (data['food_quality'] == "good") &
+            (data['pricerange'] == "cheap") &
+            (data['food'] != "romanian")
+            ]
+    elif filter['addition'] == "assigned_seats":
+        res = data[(data['crowdedness'] == "busy")]
+    elif filter['addition'] == "children":
+        res = data[(data['length_of_stay'] == "long_stay")]
+    elif filter['addition'] == "romantic":
+        res = data[
+            (data['crowdedness'] != "busy") &
+            (data['length_of_stay'] == "long_stay")
+            ]
+    else:
+        return data
+    return res
 class Dialog:
     def __init__(self, classifier, vectorizer, restaurants):
         # Define the states
-        states = ['start', 'welcome', 'ask_area', 'area_confirm',
-                  'ask_price', 'price_confirm', 'ask_food_type', 'food_confirm',
-                  'check_recommend', 'give_recommend', 'ask_start_over',
+        states = ['start', 'welcome', 'ask_delay', 'ask_caps',
+                  'ask_area', 'area_confirm', 'ask_price', 'price_confirm', 'ask_food_type', 'food_confirm',
+                  'check_recommend',  'ask_start_over',
+                  'ask_addition', 'addition_confirm', 'filter_recommend', 'ask_reset', 'give_recommend',
                   'detail', 'end']
 
         # Define the transitions
         transitions = [
             {'trigger': 'forward', 'source': 'start', 'dest': 'welcome'},
-            {'trigger': 'forward', 'source': 'welcome', 'dest': 'ask_area'},
+            {'trigger': 'forward', 'source': 'welcome', 'dest': 'ask_delay'},
+
+            {'trigger': 'forward', 'source': 'ask_delay', 'dest': 'ask_caps'},
+            {'trigger': 'again', 'source': 'ask_delay', 'dest': '='},
+
+            {'trigger': 'forward', 'source': 'ask_caps', 'dest': 'ask_area'},
+            {'trigger': 'again', 'source': 'ask_caps', 'dest': '='},
 
             {'trigger': 'forward', 'source': 'ask_area', 'dest': 'ask_price'},
             {'trigger': 'confirm', 'source': 'ask_area', 'dest': 'area_confirm'},
@@ -58,13 +87,28 @@ class Dialog:
             {'trigger': 'forward', 'source': 'food_confirm', 'dest': 'check_recommend'},
             {'trigger': 'backward', 'source': 'food_confirm', 'dest': 'ask_food_type'},
 
-            {'trigger': 'success', 'source': 'check_recommend', 'dest': 'give_recommend'},
-            {'trigger': 'failure', 'source': 'check_recommend', 'dest': 'ask_start_over'},
+            # new here
+            {'trigger': 'success', 'source': 'check_recommend', 'dest': 'ask_addition', 'before': 'set_delay'},
+            {'trigger': 'failure', 'source': 'check_recommend', 'dest': 'ask_start_over', 'before': 'set_delay'},
 
             {'trigger': 'forward', 'source': 'ask_start_over', 'dest': 'end'},
             {'trigger': 'again', 'source': 'ask_start_over', 'dest': 'welcome'},
 
-            {'trigger': 'success', 'source': 'give_recommend', 'dest': 'detail'},
+            {'trigger': 'forward', 'source': 'ask_addition', 'dest': 'filter_recommend'},
+            {'trigger': 'skip', 'source': 'ask_addition', 'dest': 'give_recommend'},
+            {'trigger': 'confirm', 'source': 'ask_addition', 'dest': 'addition_confirm'},
+            {'trigger': 'again', 'source': 'ask_addition', 'dest': '='},
+
+            {'trigger': 'forward', 'source': 'addition_confirm', 'dest': 'filter_recommend'},
+            {'trigger': 'backward', 'source': 'addition_confirm', 'dest': 'ask_addition'},
+
+            {'trigger': 'success', 'source': 'filter_recommend', 'dest': 'give_recommend', 'before': 'set_delay'},
+            {'trigger': 'failure', 'source': 'filter_recommend', 'dest': 'ask_reset', 'before': 'set_delay'},
+
+            {'trigger': 'success', 'source': 'ask_reset', 'dest': 'ask_addition'},
+            {'trigger': 'failure', 'source': 'ask_reset', 'dest': 'ask_start_over'},
+
+            {'trigger': 'success', 'source': 'give_recommend', 'dest': 'detail', 'before': 'set_delay'},
             {'trigger': 'failure', 'source': 'give_recommend', 'dest': 'check_recommend'},
 
             {'trigger': 'forward', 'source': 'detail', 'dest': 'end'},
@@ -81,28 +125,73 @@ class Dialog:
         self.status = "forward"
         self.confirm_text = ""
 
-        # Load data, Initialize filter, first search and recommend list
+        # Load data, Initialize filter, first search, recommend list and filter list
         self.restaurants = restaurants
-        self.filter = {"area": "", "price_range": "", "food_type": ""}
+        self.filter = {"area": "", "price_range": "", "food_type": "", "addition": ""}
         self.first_time = True
-        self.recommend_list = []
+        self.recommend_list = pd.DataFrame()
+        self.filter_list = pd.DataFrame()
+
+        # Initialize switches
+        self.delay = False
+        self.caps = False
 
     def get_user_input(self, field=None):
         message = input("User: ").lower()
         act = prediction(self.classifer, self.vectorizer, message)
+        print(act)
         if act == "null" and field:
             closest_key, min_distance = find_nearest_keyword(message, field)
             act = prediction(self.classifer, self.vectorizer, closest_key)
         return message, act
 
+    def set_delay(self):
+        print("Now searching ...")
+        if self.delay:
+            time.sleep(3)
+    def capitalize(self, input):
+        return input.upper() if self.caps else input
+
+
     def print_restaurant(self, data, detail=False):
-        print(f"I recommend {data[0]}, it is an {data[1]} {data[3]} restaurant in the {data[2]} of town.")
+        info = f"I recommend {data[0]}, it is an {data[1]} {data[3]} restaurant in the {data[2]} of town."
+        details = (f"According to your requirement. It is a {self.filter['addition']} restaurant.\n"
+                   f"The food quality there is {data[7]}. The restaurant is {data[8]}. The time to stay in the restaurant is {data[9]}.\n"
+                   f"Their phone number is {data[4]}. Their address is {data[5]}. Their postcode is {data[6]}.")
+        info = self.capitalize(info)
+        details = self.capitalize(details)
+        print(info)
         if detail:
-            print(f"Their phone number is {data[4]}. Their address is {data[5]}. Their postcode is {data[6]}.")
+            print(details)
     def on_enter_welcome(self):
         print("Hello , welcome! You can ask for restaurants by area , price range or food type.")
         self.first_time = True
         self.status = "forward"
+
+    def on_enter_ask_delay(self):
+        print("Do you want a 3 second delay before showing system responses?")
+        _, act = self.get_user_input()
+        if act == 'affirm':
+            self.delay = True
+            self.status = "forward"
+        elif act == 'negate':
+            self.delay = False
+            self.status = "forward"
+        else:
+            self.status = "again"
+
+    def on_enter_ask_caps(self):
+        print("Do you want the system responses are ALL CAPS?")
+        _, act = self.get_user_input()
+        if act == 'affirm':
+            self.caps = True
+            self.status = "forward"
+        elif act == 'negate':
+            self.caps = False
+            self.status = "forward"
+        else:
+            self.status = "again"
+
     def on_enter_ask_area(self):
         print("What part of town do you have in mind?")
         message, act = self.get_user_input(area)
@@ -181,23 +270,66 @@ class Dialog:
 
     def on_enter_check_recommend(self):
         if self.first_time:
-            res = search_restaurants(self.restaurants, self.filter)
-            self.recommend_list = res.values.tolist()
+            self.recommend_list = search_restaurants(self.restaurants, self.filter)
+            self.filter_list = self.recommend_list
             self.first_time = False
-        if self.recommend_list:
+        print(self.recommend_list)
+        if len(self.recommend_list):
+            self.status = "success"
+        else:
+            self.status = "failure"
+
+    def on_enter_ask_addition(self):
+        print("Do you have additional requirements? (enter no to skip)")
+        message, act = self.get_user_input()
+        if act == 'negate':
+            self.status = "skip"
+            return
+        closest_key, min_distance = find_nearest_keyword(message, additional)
+        if closest_key in additional and min_distance == 0:
+            self.status = "forward"
+            self.filter['addition'] = closest_key
+        elif closest_key in additional and min_distance < 3:
+            self.status = "confirm"
+            self.confirm_text = closest_key
+        else:
+            self.status = "again"
+
+    def on_enter_addition_confirm(self):
+        print(f"I did not understand that correctly, do you mean a {self.confirm_text} restaurant?")
+        message, act = self.get_user_input()
+        if act == 'affirm':
+            self.status = "forward"
+            self.filter['addition'] = self.confirm_text
+        else:
+            self.status = "backward"
+
+    def on_enter_filter_recommend(self):
+        self.filter_list = filter_restaurants(self.recommend_list, self.filter)
+        print(self.filter_list)
+        if len(self.filter_list):
+            self.status = "success"
+        else:
+            self.status = "failure"
+
+    def on_enter_ask_reset(self):
+        print("No recommendation exist! Do you want to reset the additional requirement?")
+        message, act = self.get_user_input()
+        if act == 'affirm':
             self.status = "success"
         else:
             self.status = "failure"
 
     def on_enter_give_recommend(self):
         print("We find a restaurant!")
-        self.print_restaurant(self.recommend_list[0])
+        recommend = self.filter_list.iloc[0]
+        self.print_restaurant(recommend)
         print("Do you want it as your final result?")
         message, act = self.get_user_input()
         if act == 'affirm':
             self.status = "success"
         else:
-            self.recommend_list.pop(0)
+            self.recommend_list = self.recommend_list.drop(recommend.name)
             self.status = "failure"
 
     def on_enter_ask_start_over(self):
@@ -209,7 +341,7 @@ class Dialog:
             self.status = "forward"
 
     def on_enter_detail(self):
-        self.print_restaurant(self.recommend_list[0], True)
+        self.print_restaurant(self.filter_list.iloc[0], True)
         self.status = "forward"
 
     def on_enter_end(self):
@@ -229,9 +361,11 @@ if __name__ == '__main__':
     classifier = train(vectorizer, classifier, X_train, y_train)
 
     # Load restaurant data
-    restaurants = pd.read_csv("data/restaurant_info.csv")
+    restaurants = pd.read_csv("data/restaurant_info_v2.csv")
 
     # Create a door object
     system = Dialog(classifier, vectorizer, restaurants)
     while system.state != 'end':
+        print(system.state)
+        print(system.status)
         getattr(system, system.status)()
