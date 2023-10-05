@@ -120,7 +120,7 @@ def evaluate(path, model):
         for batch in tqdm(validation_loader):
             input_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
-            labels = batch['labels'].to(device)
+            labels = batch['label'].to(device)
 
             outputs = model(input_ids, attention_mask=attention_mask)
             predicted = torch.argmax(outputs.logits, dim=1)
@@ -153,9 +153,13 @@ def interaction(tokenizer, model):
 if __name__ == '__main__':
     root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # model_name = 'bert-base-uncased'
-    model_name = sys.argv[3]
+
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-    model = BertForSequenceClassification.from_pretrained(model_name, num_labels=15)
+    if sys.argv[1] == "train":
+        model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=15)
+    else:
+        model_path = sys.argv[3]
+        model = BertForSequenceClassification.from_pretrained(os.path.join(root_path, model_path), num_labels=15)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
     if sys.argv[1] == "train":
