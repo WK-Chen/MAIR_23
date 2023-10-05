@@ -101,6 +101,7 @@ def train(path, model):
 
         average_loss = total_loss / len(train_loader)
         print(f"Epoch {epoch + 1}/{epochs}, Loss: {average_loss:.4f}")
+
     model.save_pretrained(os.path.join(root_path, "models/trained_bert"))
     return model
 

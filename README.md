@@ -22,7 +22,9 @@ Users can also input sentences to test the classifier after the evaluation.
 Train classifier2 by running `python part1a/classifier2.py [ACTION] [DATA_PATH]`.
 e.g. `python part1a/classifier2.py train data/dialog_acts.csv`
 
-We can also download trained BERT model by running the script ``
+We can also download trained BERT model 
+[here](https://drive.google.com/file/d/1XBmQHv-fevgoihTdokZQwY_IAfh3ViJ1/view?usp=sharing) 
+and unzip it under "model/" folder
 
 Evaluate classifier2 by running `python part1a/classifier2.py [ACTION] [DATA_PATH] [MODEL_PATH]`.
 e.g. `python part1a/classifier2.py evaluate data/dialog_acts.csv models/trained_bert`
@@ -39,7 +41,7 @@ Diagram_1c.pdf shows the state transition is the dialog system.
 
 Run `python part1c/create_restaurant_info_v2.py` to create a new .csv file with extra properties
 
-Run `dialog_system_v2.py` for the dialog system with switches and reasoning part
+Start the dialog system by running `python part1c/dialog_system_v2.py`.
 
 [//]: # (Four features)
 
