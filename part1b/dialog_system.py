@@ -1,7 +1,11 @@
+import os
+import sys
+sys.path.append(os.getcwd())
+
 from transitions import Machine
 from part1a.classifier1 import *
-from utils import *
-import pandas as pd
+from utils.utils import *
+
 
 # Keywords for prefer extraction
 food_type = ["british", "modern european", "italian", "romanian", "chinese", "seafood", "steakhouse", "asian oriental",
@@ -53,7 +57,7 @@ class Dialog:
 
             {'trigger': 'forward', 'source': 'ask_food_type', 'dest': 'check_recommend'},
             {'trigger': 'confirm', 'source': 'ask_food_type', 'dest': 'food_confirm'},
-            {'trigger': 'again', 'source': 'ask_price', 'dest': '='},
+            {'trigger': 'again', 'source': 'ask_food_type', 'dest': '='},
 
             {'trigger': 'forward', 'source': 'food_confirm', 'dest': 'check_recommend'},
             {'trigger': 'backward', 'source': 'food_confirm', 'dest': 'ask_food_type'},
@@ -217,9 +221,10 @@ class Dialog:
 
 
 if __name__ == '__main__':
+    root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # Set up classifier
-    data_path = "../data/dialog_acts.csv"
-    data_path_dedup = "../data/dialog_acts_dedup.csv"
+    data_path = os.path.join(root_path, "data/dialog_acts.csv")
+    # data_path_dedup = "../data/dialog_acts_dedup.csv"
 
     vectorizer = CountVectorizer()
     classifier = KNeighborsClassifier(3)
@@ -229,7 +234,7 @@ if __name__ == '__main__':
     classifier = train(vectorizer, classifier, X_train, y_train)
 
     # Load restaurant data
-    restaurants = pd.read_csv("../data/restaurant_info.csv")
+    restaurants = pd.read_csv(os.path.join(root_path, "data/restaurant_info.csv"))
 
     # Create a door object
     system = Dialog(classifier, vectorizer, restaurants)

@@ -71,7 +71,7 @@ def train(path, model):
     # Define hyperparameters
     batch_size = 16
     learning_rate = 2e-5
-    epochs = 1
+    epochs = 3
 
     # Create data loaders for training
     train_dataset = DSTCDataset(path, tokenizer)

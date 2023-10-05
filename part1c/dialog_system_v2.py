@@ -1,8 +1,10 @@
+import os
+import sys
+sys.path.append(os.getcwd())
 import time
-
 from transitions import Machine
 from part1a.classifier1 import *
-from utils import *
+from utils.utils import *
 import pandas as pd
 
 # Keywords for prefer extraction
@@ -349,9 +351,10 @@ class Dialog:
 
 
 if __name__ == '__main__':
+    root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # Set up classifier
-    data_path = "../data/dialog_acts.csv"
-    data_path_dedup = "../data/dialog_acts_dedup.csv"
+    data_path = os.path.join(root_path, "data/dialog_acts.csv")
+    # data_path_dedup = "../data/dialog_acts_dedup.csv"
 
     vectorizer = CountVectorizer()
     classifier = KNeighborsClassifier(3)
@@ -361,7 +364,7 @@ if __name__ == '__main__':
     classifier = train(vectorizer, classifier, X_train, y_train)
 
     # Load restaurant data
-    restaurants = pd.read_csv("../data/restaurant_info_v2.csv")
+    restaurants = pd.read_csv(os.path.join(root_path, "data/restaurant_info_v2.csv"))
 
     # Create a door object
     system = Dialog(classifier, vectorizer, restaurants)

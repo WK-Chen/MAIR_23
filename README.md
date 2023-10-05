@@ -21,23 +21,32 @@ Users can also input sentences to test the classifier after the evaluation.
 ### Classifier 2
 Train classifier2 by running `python part1a/classifier2.py [ACTION] [DATA_PATH]`.
 e.g. `python part1a/classifier2.py train data/dialog_acts.csv`
-Download trained BERT model by running the script ``
-Run `python part1a/classifier2.py [ACTION] [DATA_PATH] [MODEL_PATH]` to see the results for classifier2. Users can also input 
-sentences to test the classifier. For example, we use `python part1a/classifier2.py train data/dialog_acts.csv bert-base-uncased`
-to train the model. We use `python part1a/classifier2.py evaluate data/dialog_acts.csv models/bert` 
-to evaluate the trained model
+
+We can also download trained BERT model by running the script ``
+
+Evaluate classifier2 by running `python part1a/classifier2.py [ACTION] [DATA_PATH] [MODEL_PATH]`.
+e.g. `python part1a/classifier2.py evaluate data/dialog_acts.csv models/trained_bert`
+
+Users can also input sentences to test the classifier after the evaluation.
 
 ## Part 1b
+Diagram_1b.pdf shows the state transition is the dialog system.
+
+Start the dialog system by running `python part1b/dialog_system.py`.
 
 ## Part 1c
-See the diagram for 1c in `FinalDiagram1c.pdf`
+Diagram_1c.pdf shows the state transition is the dialog system.
 
-Run `create_restaurant_info_v2.py` to create a new .csv file with extra properties
+Run `python part1c/create_restaurant_info_v2.py` to create a new .csv file with extra properties
 
 Run `dialog_system_v2.py` for the dialog system with switches and reasoning part
 
-Four features
-1. Use one of the baselines for dialog act recognition instead of the machine learning classifier
-2. Ask user about correctness of match for Levenshtein results
-3. OUTPUT IN ALL CAPS OR NOT (switch on/off)
-4. Introduce a delay before showing system responses (switch on/off)
+[//]: # (Four features)
+
+[//]: # (1. Use one of the baselines for dialog act recognition instead of the machine learning classifier)
+
+[//]: # (2. Ask user about correctness of match for Levenshtein results)
+
+[//]: # (3. OUTPUT IN ALL CAPS OR NOT &#40;switch on/off&#41;)
+
+[//]: # (4. Introduce a delay before showing system responses &#40;switch on/off&#41;)
