@@ -1,30 +1,12 @@
-import pandas as pd
-from sklearn.model_selection import train_test_split
+import os
+import sys
+sys.path.append(os.getcwd())
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, confusion_matrix
-from sklearn.preprocessing import LabelEncoder
-from sklearn.ensemble import AdaBoostClassifier
 from sklearn.neighbors import KNeighborsClassifier
 import matplotlib.pyplot as plt
 
-from utils import *
-
-
-# def process(path):
-#     # Load saved dataet into df
-#     df = pd.DataFrame(load_csv(path), columns=["Label", "Sentence"])
-#
-#     # split the dataset into training 85% and testing 15%
-#     X = df["Sentence"]
-#     y = df["Label"]
-#
-#     # the random state is that the split is done in the same way every time the code is being run
-#     # so that we don t have to make separate files for the data splits
-#     return train_test_split(X, y, test_size=0.15, random_state=42)
-
+from utils.utils import *
 
 def train(vectorizer, classifier, X_train, y_train):
     """KNN has the best accuracy - 0.97, but all that I tested were good >0.94 but I m not sure ab the other metrics,
@@ -46,11 +28,11 @@ def evaluate(vectorizer, classifier, X_test, y_test, classes):
     accuracy = accuracy_score(y_test, y_predicted)
     print(f"Accuracy on test data: {accuracy}")
 
-    confusion = confusion_matrix(y_test, y_predicted, labels=classes)
-    print(confusion)
-    disp = ConfusionMatrixDisplay(confusion_matrix=confusion, display_labels=classes)
-    disp.plot()
-    plt.show()
+    # confusion = confusion_matrix(y_test, y_predicted, labels=classes)
+    # print(confusion)
+    # disp = ConfusionMatrixDisplay(confusion_matrix=confusion, display_labels=classes)
+    # disp.plot()
+    # plt.show()
 
 def interaction(vectorizer, classifier):
     # Start diaglogue
@@ -58,7 +40,7 @@ def interaction(vectorizer, classifier):
         user_input = input("User: ")
         if user_input == "":
             break
-        print(predict(user_input))
+        print(predict(user_input, vectorizer, classifier))
 
 def predict(utterance : str, classifier, vectorizer):
     return classifier.predict(vectorizer.transform([utterance]))[0]
@@ -66,14 +48,16 @@ def predict(utterance : str, classifier, vectorizer):
 
 if __name__ == "__main__":
     # Paths of the stored data
-    data_path = "../data/dialog_acts.csv"
-    data_path_dedup = "../data/dialog_acts_dedup.csv"
+    root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # data_path = "data/dialog_acts.csv"
+    # data_path_dedup = "data/dialog_acts_dedup.csv"
+
+    # Write the data path when run the code
+    data_path = os.path.join(root_path, sys.argv[1])
 
     # bag of words
     vectorizer = CountVectorizer()
 
-    # classifier = MultinomialNB()
-    # classifier =   SVC(kernel="linear", C=0.025)
     classifier = KNeighborsClassifier(3)
 
     X_train, X_test, y_train, y_test = split_dataset_pd(data_path)

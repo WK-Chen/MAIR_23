@@ -4,7 +4,15 @@
 Wenkai Chen, Stanescu Raluca, Frederieke Blom, Niek Kemp, Dimitra Tsolka
 
 ## Part 1a
-Run baseline1.py, baseline2.py, classifier1.py, classifier2.py to see the results for the two baselines and two classifier
+Run `python part1a/data_process.py` to turn dialog_acts.dat to csv file and create a deduplication version
+
+Run `python part1a/baseline1.py`, `python part1a/baseline2.py` to see the baseline results for two datasets
+
+Run `python part1a/classifier1.py [DATA_PATH]` to see the results for classifier1. Users can also input sentences to
+test the classifier.
+
+Run `python part1a/classifier2.py [DATA_PATH] [MODEL_PATH]` to see the results for classifier2. Users can also input 
+sentences to test the classifier.
 
 ## Part 1b
 
