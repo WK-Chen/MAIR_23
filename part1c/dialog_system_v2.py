@@ -15,7 +15,7 @@ food_type = ["british", "modern european", "italian", "romanian", "chinese", "se
              "jamaican", "lebanese", 'cuban', "catalan"]
 area = ["east", "south", "centre", "north", "west"]
 price_range = ["cheap", "moderate", "expensive"]
-additional = ["touristic", "assigned", "children", "romantic"]
+additional = ["touristic", "assigned", "children", "romantic", "long", "short", "good", "bad", "busy", "leisure"]
 
 def prediction(classifier, vectorizer, utterance: str):
     res = predict(utterance, classifier, vectorizer)
@@ -39,12 +39,18 @@ def filter_restaurants(data, filter):
     elif filter['addition'] == "assigned_seats":
         res = data[(data['crowdedness'] == "busy")]
     elif filter['addition'] == "children":
-        res = data[(data['length_of_stay'] == "long_stay")]
+        res = data[(data['length_of_stay'] == "long")]
     elif filter['addition'] == "romantic":
         res = data[
             (data['crowdedness'] != "busy") &
-            (data['length_of_stay'] == "long_stay")
+            (data['length_of_stay'] == "long")
             ]
+    elif filter['addition'] in ["good", "bad"]:
+        res = data[(data['food_quality'] == filter['addition'])]
+    elif filter['addition'] in ["busy", "leisure"]:
+        res = data[(data['crowdedness'] == filter['addition'])]
+    elif filter['addition'] in ["short", "long"]:
+        res = data[(data['length_of_stay'] == filter['addition'])]
     else:
         return data
     return res
@@ -141,7 +147,7 @@ class Dialog:
     def get_user_input(self, field=None):
         message = input("User: ").lower()
         act = prediction(self.classifer, self.vectorizer, message)
-        print(act)
+        # print(act)
         if act == "null" and field:
             closest_key, min_distance = find_nearest_keyword(message, field)
             act = prediction(self.classifer, self.vectorizer, closest_key)
@@ -157,8 +163,17 @@ class Dialog:
 
     def print_restaurant(self, data, detail=False):
         info = f"I recommend {data[0]}, it is an {data[1]} {data[3]} restaurant in the {data[2]} of town."
-        details = (f"According to your requirement. It is a {self.filter['addition']} restaurant.\n"
-                   f"The food quality there is {data[7]}. The restaurant is {data[8]}. The time to stay in the restaurant is {data[9]}.\n"
+        if self.filter['addition'] in ["good", "bad"]:
+            addition = f"It is a restaurant in {self.filter['addition']} food quality."
+        elif self.filter['addition'] in ["busy", "leisure"]:
+            addition = f"It is a {self.filter['addition']} restaurant."
+        elif self.filter['addition'] in ["short", "long"]:
+            addition = f"It is a {self.filter['addition']} stay restaurant."
+        else:
+            addition = "It is a {self.filter['addition']} restaurant."
+        details = (f"According to your requirement. {addition}\n"
+                   f"The food quality there is {data[7]}. The restaurant is {data[8]}. "
+                   f"The time to stay in the restaurant is {data[9]}.\n"
                    f"Their phone number is {data[4]}. Their address is {data[5]}. Their postcode is {data[6]}.")
         info = self.capitalize(info)
         details = self.capitalize(details)
@@ -275,7 +290,7 @@ class Dialog:
             self.recommend_list = search_restaurants(self.restaurants, self.filter)
             self.filter_list = self.recommend_list
             self.first_time = False
-        print(self.recommend_list)
+        # print(self.recommend_list)
         if len(self.recommend_list):
             self.status = "success"
         else:
@@ -308,7 +323,7 @@ class Dialog:
 
     def on_enter_filter_recommend(self):
         self.filter_list = filter_restaurants(self.recommend_list, self.filter)
-        print(self.filter_list)
+        # print(self.filter_list)
         if len(self.filter_list):
             self.status = "success"
         else:
@@ -369,6 +384,6 @@ if __name__ == '__main__':
     # Create a door object
     system = Dialog(classifier, vectorizer, restaurants)
     while system.state != 'end':
-        print(system.state)
-        print(system.status)
+        # print(system.state)
+        # print(system.status)
         getattr(system, system.status)()

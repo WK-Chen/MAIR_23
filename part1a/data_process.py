@@ -1,5 +1,7 @@
-from utils import *
-import random
+import os
+import sys
+sys.path.append(os.getcwd())
+from utils.utils import *
 
 
 # Reads the given dataset and converts it to a csv file
@@ -30,15 +32,16 @@ def deduplicate(input, output):
 
 if __name__ == "__main__":
     # Define Paths
-    orig_data_path = "../data/dialog_acts.dat"
-    data_path = "../data/dialog_acts.csv"
-    data_path_dedup = "../data/dialog_acts_dedup.csv"
+    root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    orig_data_path = os.path.join(root_path, "data/dialog_acts.dat")
+    data_path = os.path.join(root_path, "data/dialog_acts.csv")
+    data_path_dedup = os.path.join(root_path, "data/dialog_acts_dedup.csv")
 
     # Create the csv datasets
     dat_to_csv(orig_data_path, data_path)
     deduplicate(data_path, data_path_dedup)
 
     # Load the datasets
-    data = load_csv("../data/dialog_acts.csv")
-    data_dedup = load_csv("../data/dialog_acts_dedup.csv")
+    data = load_csv(os.path.join(root_path, "data/dialog_acts.csv"))
+    data_dedup = load_csv(os.path.join(root_path, "data/dialog_acts_dedup.csv"))
     print(len(data), len(data_dedup))
