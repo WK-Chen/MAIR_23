@@ -1,3 +1,7 @@
+import os
+import sys
+sys.path.append(os.getcwd())
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -5,7 +9,7 @@ from transformers import BertTokenizer, BertForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
-from utils import *
+from utils.utils import *
 
 # turn label to number
 label_to_seq = {
@@ -63,14 +67,14 @@ class DSTCDataset(Dataset):
 
         return inputs
 
-def train(model):
+def train(path, model):
     # Define hyperparameters
     batch_size = 16
     learning_rate = 2e-5
     epochs = 5
 
     # Create data loaders for training
-    train_dataset = DSTCDataset("../data/dialog_acts.csv", tokenizer)
+    train_dataset = DSTCDataset(path, tokenizer)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
     # Define loss function and optimizer
@@ -97,6 +101,7 @@ def train(model):
 
         average_loss = total_loss / len(train_loader)
         print(f"Epoch {epoch + 1}/{epochs}, Loss: {average_loss:.4f}")
+    model.save_pretrained("trained_bert")
     return model
 
 def evaluate(model):
@@ -146,13 +151,15 @@ def interaction(tokenizer, model):
         print(seq_to_label[predicted])
 
 if __name__ == '__main__':
-    model_name = 'bert-base-uncased'
-    tokenizer = BertTokenizer.from_pretrained(model_name)
+    root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # model_name = 'bert-base-uncased'
+    model_name = sys.argv[3]
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     model = BertForSequenceClassification.from_pretrained(model_name, num_labels=15)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
-
-    model = train(model)
+    if sys.argv[1] == "train":
+        model = train(os.path.join(root_path, sys.argv[2]), model)
     evaluate(model)
 
     # predict with human input

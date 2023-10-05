@@ -11,8 +11,10 @@ Run `python part1a/baseline1.py`, `python part1a/baseline2.py` to see the baseli
 Run `python part1a/classifier1.py [DATA_PATH]` to see the results for classifier1. Users can also input sentences to
 test the classifier.
 
-Run `python part1a/classifier2.py [DATA_PATH] [MODEL_PATH]` to see the results for classifier2. Users can also input 
-sentences to test the classifier.
+Run `python part1a/classifier2.py [ACTION] [DATA_PATH] [MODEL_PATH]` to see the results for classifier2. Users can also input 
+sentences to test the classifier. For example, we use `python part1a/classifier2.py train data/dialog_acts.csv bert-base-uncased`
+to train the model. We use `python part1a/classifier2.py evaluate data/dialog_acts.csv models/bert` 
+to evaluate the trained model
 
 ## Part 1b
 
