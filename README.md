@@ -22,9 +22,10 @@ Users can also input sentences to test the classifier after the evaluation.
 Train classifier2 by running `python part1a/classifier2.py [ACTION] [DATA_PATH]`.
 e.g. `python part1a/classifier2.py train data/dialog_acts.csv`
 
-We can also download trained BERT model 
-[here](https://drive.google.com/file/d/1XBmQHv-fevgoihTdokZQwY_IAfh3ViJ1/view?usp=sharing) 
-and unzip it under "model/" folder
+We can also download trained BERT model for evaluation.
+First, we run `mkdir models/` to create the folder. 
+Then we download the model [here](https://drive.google.com/file/d/1XBmQHv-fevgoihTdokZQwY_IAfh3ViJ1/view?usp=sharing).
+Last unzip it under "model/" folder.
 
 Evaluate classifier2 by running `python part1a/classifier2.py [ACTION] [DATA_PATH] [MODEL_PATH]`.
 e.g. `python part1a/classifier2.py evaluate data/dialog_acts.csv models/trained_bert`
