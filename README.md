@@ -1,7 +1,7 @@
 # MAIR Group 23
 
 ## Team
-Wenkai Chen, Stanescu Raluca, Frederieke Blom, Niek Kemp, Dimitra Tsolka
+Wenkai Chen, Stanescu Raluca, Niek Kemp, Dimitra Tsolka
 
 ## Part 1a
 Run `python part1a/data_process.py` to turn dialog_acts.dat to csv file and create a deduplication version dialog_acts_dedup.csv
@@ -46,7 +46,7 @@ Start the dialog system by running `python part1c/dialog_system_v2.py`.
 
 [//]: # (Four features)
 
-[//]: # (1. Use one of the baselines for dialog act recognition instead of the machine learning classifier)
+[//]: # (1. Allow dialog restarts or not)
 
 [//]: # (2. Ask user about correctness of match for Levenshtein results)
 
