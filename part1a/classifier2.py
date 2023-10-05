@@ -71,7 +71,7 @@ def train(path, model):
     # Define hyperparameters
     batch_size = 16
     learning_rate = 2e-5
-    epochs = 5
+    epochs = 1
 
     # Create data loaders for training
     train_dataset = DSTCDataset(path, tokenizer)
@@ -101,15 +101,15 @@ def train(path, model):
 
         average_loss = total_loss / len(train_loader)
         print(f"Epoch {epoch + 1}/{epochs}, Loss: {average_loss:.4f}")
-    model.save_pretrained("trained_bert")
+    model.save_pretrained(os.path.join(root_path, "models/trained_bert"))
     return model
 
-def evaluate(model):
+def evaluate(path, model):
     # Define hyperparameters
     batch_size = 16
 
     # Create data loaders for test
-    validation_dataset = DSTCDataset("../data/dialog_acts.csv", tokenizer, 'test')
+    validation_dataset = DSTCDataset(path, tokenizer, 'test')
     validation_loader = DataLoader(validation_dataset, batch_size=batch_size)
 
     # Validation loop
@@ -160,7 +160,7 @@ if __name__ == '__main__':
     model.to(device)
     if sys.argv[1] == "train":
         model = train(os.path.join(root_path, sys.argv[2]), model)
-    evaluate(model)
+    evaluate(os.path.join(root_path, sys.argv[2]), model)
 
     # predict with human input
     # interaction()

@@ -17,7 +17,6 @@ def train(vectorizer, classifier, X_train, y_train):
 
     X_train = vectorizer.fit_transform(X_train)
     classifier.fit(X_train, y_train)
-
     return classifier
 
 
@@ -40,7 +39,7 @@ def interaction(vectorizer, classifier):
         user_input = input("User: ")
         if user_input == "":
             break
-        print(predict(user_input, vectorizer, classifier))
+        print(predict(user_input, classifier, vectorizer))
 
 def predict(utterance : str, classifier, vectorizer):
     return classifier.predict(vectorizer.transform([utterance]))[0]
@@ -54,15 +53,13 @@ if __name__ == "__main__":
 
     # Write the data path when run the code
     data_path = os.path.join(root_path, sys.argv[1])
+    X_train, X_test, y_train, y_test = split_dataset_pd(data_path)
 
     # bag of words
     vectorizer = CountVectorizer()
-
     classifier = KNeighborsClassifier(3)
-
-    X_train, X_test, y_train, y_test = split_dataset_pd(data_path)
-
     classifier = train(vectorizer, classifier, X_train, y_train)
+
     evaluate(vectorizer, classifier, X_test, y_test, classifier.classes_)
 
     # predict with human input

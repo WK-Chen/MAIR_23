@@ -8,9 +8,13 @@ Run `python part1a/data_process.py` to turn dialog_acts.dat to csv file and crea
 
 Run `python part1a/baseline1.py`, `python part1a/baseline2.py` to see the baseline results for two datasets
 
-Run `python part1a/classifier1.py [DATA_PATH]` to see the results for classifier1. Users can also input sentences to
-test the classifier.
+### Classifier 1
+Train and evaluate classifier by running `python part1a/classifier1.py [DATA_PATH]`. 
+e.g. `python part1a/classifier1.py data/dialog_acts.csv`
 
+Users can also input sentences to test the classifier after the evaluation.
+
+### Classifier 2
 Run `python part1a/classifier2.py [ACTION] [DATA_PATH] [MODEL_PATH]` to see the results for classifier2. Users can also input 
 sentences to test the classifier. For example, we use `python part1a/classifier2.py train data/dialog_acts.csv bert-base-uncased`
 to train the model. We use `python part1a/classifier2.py evaluate data/dialog_acts.csv models/bert` 
