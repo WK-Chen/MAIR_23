@@ -24,7 +24,8 @@ e.g. `python part1a/classifier2.py train data/dialog_acts.csv`
 
 We can also download trained BERT model for evaluation.
 First, we run `mkdir models/` to create the folder. 
-Then we download the model [here](https://drive.google.com/file/d/1XBmQHv-fevgoihTdokZQwY_IAfh3ViJ1/view?usp=sharing).
+Then we download the model [here](https://drive.google.com/file/d/1XBmQHv-fevgoihTdokZQwY_IAfh3ViJ1/view?usp=sharing) (trained by dialog_acts.csv) or 
+[here](https://drive.google.com/file/d/1fIlOyQewPDaqqkRQs9GDPT-0HrQMWF7m/view?usp=sharing) (trained by dialog_acts_dedup.csv).
 Last unzip it under "model/" folder.
 
 Evaluate classifier2 by running `python part1a/classifier2.py [ACTION] [DATA_PATH] [MODEL_PATH]`.
