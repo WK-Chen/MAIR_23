@@ -30,15 +30,15 @@ def deduplicate(input, output):
 
 if __name__ == "__main__":
     # Define Paths
-    orig_data_path = "./data/dialog_acts.dat"
-    data_path = "./data/dialog_acts.csv"
-    data_path_dedup = "./data/dialog_acts_dedup.csv"
+    orig_data_path = "../data/dialog_acts.dat"
+    data_path = "../data/dialog_acts.csv"
+    data_path_dedup = "../data/dialog_acts_dedup.csv"
 
     # Create the csv datasets
     dat_to_csv(orig_data_path, data_path)
     deduplicate(data_path, data_path_dedup)
 
     # Load the datasets
-    data = load_csv("./data/dialog_acts.csv")
-    data_dedup = load_csv("./data/dialog_acts_dedup.csv")
+    data = load_csv("../data/dialog_acts.csv")
+    data_dedup = load_csv("../data/dialog_acts_dedup.csv")
     print(len(data), len(data_dedup))

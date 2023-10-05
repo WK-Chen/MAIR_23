@@ -2,8 +2,8 @@ import pandas as pd
 import random
 
 # Load the CSV file into a DataFrame
-input_file = 'data/restaurant_info.csv'
-output_file = 'data/restaurant_info_v2.csv'
+input_file = '../data/restaurant_info.csv'
+output_file = '../data/restaurant_info_v2.csv'
 df = pd.read_csv(input_file)
 
 # (food quality, crowdedness, length of stay)

@@ -70,10 +70,10 @@ def baseline_classifier2(it):
 
 
 # Define paths
-data_path = "./data/dialog_acts.csv"
-data_path_dedup = "./data/dialog_acts_dedup.csv"
+data_path = "../data/dialog_acts.csv"
+data_path_dedup = "../data/dialog_acts_dedup.csv"
 
-X_train, X_test, y_train, y_test = split_dataset_pd(data_path)
+X_train, X_test, y_train, y_test = split_dataset_pd(data_path_dedup)
 
 # Test any baseline classifier on the test data
 correct_predictions = 0
@@ -90,16 +90,16 @@ for sentence, true_label in zip(X_test, y_test):
 print(f"Accuracy on test data: {correct_predictions / total_predictions}")
 
 
-print(y_train.value_counts(), y_predicted.value_counts())
-
-ul = y_train.unique()
-
-confusion = confusion_matrix(y_train, y_predicted,labels=ul)
-
-
-disp = ConfusionMatrixDisplay(
-    confusion_matrix=confusion,
-    display_labels=ul,
-)
-disp.plot()
-plt.show()
+# print(y_train.value_counts(), y_predicted.value_counts())
+#
+# ul = y_train.unique()
+#
+# confusion = confusion_matrix(y_train, y_predicted,labels=ul)
+#
+#
+# disp = ConfusionMatrixDisplay(
+#     confusion_matrix=confusion,
+#     display_labels=ul,
+# )
+# disp.plot()
+# plt.show()

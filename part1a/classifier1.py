@@ -66,8 +66,8 @@ def predict(utterance : str, classifier, vectorizer):
 
 if __name__ == "__main__":
     # Paths of the stored data
-    data_path = "./data/dialog_acts.csv"
-    data_path_dedup = "./data/dialog_acts_dedup.csv"
+    data_path = "../data/dialog_acts.csv"
+    data_path_dedup = "../data/dialog_acts_dedup.csv"
 
     # bag of words
     vectorizer = CountVectorizer()

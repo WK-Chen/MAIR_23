@@ -1,7 +1,7 @@
 import time
 
 from transitions import Machine
-from classifier1 import *
+from part1a.classifier1 import *
 from utils import *
 import pandas as pd
 
@@ -350,8 +350,8 @@ class Dialog:
 
 if __name__ == '__main__':
     # Set up classifier
-    data_path = "./data/dialog_acts.csv"
-    data_path_dedup = "./data/dialog_acts_dedup.csv"
+    data_path = "../data/dialog_acts.csv"
+    data_path_dedup = "../data/dialog_acts_dedup.csv"
 
     vectorizer = CountVectorizer()
     classifier = KNeighborsClassifier(3)
@@ -361,7 +361,7 @@ if __name__ == '__main__':
     classifier = train(vectorizer, classifier, X_train, y_train)
 
     # Load restaurant data
-    restaurants = pd.read_csv("data/restaurant_info_v2.csv")
+    restaurants = pd.read_csv("../data/restaurant_info_v2.csv")
 
     # Create a door object
     system = Dialog(classifier, vectorizer, restaurants)
