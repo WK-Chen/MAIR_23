@@ -2,7 +2,7 @@ import os
 import sys
 from matplotlib import pyplot as plt
 import re
-
+from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix, f1_score, precision_score, recall_score, accuracy_score
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 sys.path.append(os.getcwd())
 from utils.utils import *
@@ -44,17 +44,15 @@ def train_and_evaluate(path):
     correct_predictions = 0
     total_predictions = len(y_test)
 
-    for sentence, true_label in zip(X_test, y_test):
-        # the next 2 lines are for the 2nd classifier
-        predicted_label = baseline_classifier2(sentence)
-        if predicted_label == true_label:
-            correct_predictions += 1
-
-    print(f"Prediction accuracy of model: {correct_predictions / total_predictions}")
+    # Test sample performance measures
+    y_predicted = X_test.apply(lambda x: baseline_classifier2(x))
+    print(f"Accuracy on test data: {accuracy_score(y_test, y_predicted)}")
+    print(f"Average precision score: {precision_score(y_test, y_predicted, average='macro', zero_division=1.0)}")
+    print(f"Average recall score: {recall_score(y_test, y_predicted, average='macro', zero_division=1.0)}")
+    print(f"Average F1 score score: {f1_score(y_test, y_predicted, average='macro', zero_division=1.0)}")
     
+    # Print the training sample confusion matrix
     y_predicted = X_train.apply(lambda x: baseline_classifier2(x))
-    
-    # Print the confusion matrix
     ul = y_train.unique()
     confusion = confusion_matrix(y_train, y_predicted,labels=ul)
     disp = ConfusionMatrixDisplay(

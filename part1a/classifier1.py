@@ -2,9 +2,12 @@ import os
 import sys
 sys.path.append(os.getcwd())
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, average_precision_score, confusion_matrix, f1_score, precision_score, recall_score
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix, f1_score, precision_score, recall_score
 import matplotlib.pyplot as plt
+from sklearn.feature_extraction.text import TfidfVectorizer
+
 
 from utils.utils import *
 
@@ -24,9 +27,13 @@ def evaluate(vectorizer, classifier, X_test, y_test, classes):
     X_test = vectorizer.transform(X_test)
     y_predicted = classifier.predict(X_test)
 
-    accuracy = accuracy_score(y_test, y_predicted)
-    print(f"Accuracy on test data: {accuracy}")
-
+    # Print evaluation metrics
+    print(f"Accuracy on test data: {accuracy_score(y_test, y_predicted)}")
+    print(f"Average precision score: {precision_score(y_test, y_predicted, average='macro', zero_division=1.0)}")
+    print(f"Average recall score: {recall_score(y_test, y_predicted, average='macro', zero_division=1.0)}")
+    print(f"Average F1 score score: {f1_score(y_test, y_predicted, average='macro', zero_division=1.0)}")
+    
+    # Print Condusion Matrix
     confusion = confusion_matrix(y_test, y_predicted, labels=classes)
     disp = ConfusionMatrixDisplay(confusion_matrix=confusion, display_labels=classes)
     disp.plot()
@@ -45,21 +52,20 @@ def predict(utterance : str, classifier, vectorizer):
 
 
 if __name__ == "__main__":
-    # Paths of the stored data
+    # Get the dataset
     root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    # data_path = "data/dialog_acts.csv"
-    # data_path_dedup = "data/dialog_acts_dedup.csv"
-
-    # Write the data path when run the code
     data_path = os.path.join(root_path, sys.argv[1])
+    
+    # Make it into train-test sets
     X_train, X_test, y_train, y_test = split_dataset_pd(data_path)
 
-    # bag of words
+    # Create and train classifier
     vectorizer = CountVectorizer()
     classifier = KNeighborsClassifier(3)
     classifier = train(vectorizer, classifier, X_train, y_train)
 
+    # Evaluate performace
     evaluate(vectorizer, classifier, X_test, y_test, classifier.classes_)
 
-    # predict with human input
+    # Predict with user input
     interaction(vectorizer, classifier)

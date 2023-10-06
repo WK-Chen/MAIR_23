@@ -1,8 +1,5 @@
 import os
 import sys
-from matplotlib import pyplot as plt
-
-from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 sys.path.append(os.getcwd())
 from utils.utils import *
 
@@ -27,23 +24,6 @@ def train_and_evaluate(path):
             correct_predictions += 1
 
     print(f"Prediction accuracy of model: {correct_predictions / total_predictions}")
-    
-    y_predicted = X_train.apply(lambda x: baseline_classifier1(x))
-    
-    # Print the confusion matrix
-    ul = y_train.unique()
-    confusion = confusion_matrix(y_train, y_predicted,labels=ul)
-    disp = ConfusionMatrixDisplay(
-        confusion_matrix=confusion,
-        display_labels=ul,
-    )
-    disp.plot()
-    if path == data_path:
-        plt.figure(1)
-        plt.title("Figure 1: Confusion Matrix of the dataset with duplicates")
-    elif path == data_path_dedup:
-        plt.figure(2)
-        plt.title("Figure 2: Confusion Matrix of the dataset without duplicates")
 
 
 if __name__ == "__main__":
@@ -58,5 +38,3 @@ if __name__ == "__main__":
 
     print("deleted duplicates dataset:")
     train_and_evaluate(data_path_dedup)
-
-    plt.show()
