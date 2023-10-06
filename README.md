@@ -3,6 +3,8 @@
 ## Team
 Wenkai Chen, Stanescu Raluca, Niek Kemp, Dimitra Tsolka
 
+### NOTICE: All the following codes should be run in the root directory (MAIR_23) to avoid bugs.
+
 ## Part 1a
 Run `python part1a/data_process.py` to turn dialog_acts.dat to csv file and create a deduplication version dialog_acts_dedup.csv
 
