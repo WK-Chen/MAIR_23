@@ -27,11 +27,10 @@ def evaluate(vectorizer, classifier, X_test, y_test, classes):
     accuracy = accuracy_score(y_test, y_predicted)
     print(f"Accuracy on test data: {accuracy}")
 
-    # confusion = confusion_matrix(y_test, y_predicted, labels=classes)
-    # print(confusion)
-    # disp = ConfusionMatrixDisplay(confusion_matrix=confusion, display_labels=classes)
-    # disp.plot()
-    # plt.show()
+    confusion = confusion_matrix(y_test, y_predicted, labels=classes)
+    disp = ConfusionMatrixDisplay(confusion_matrix=confusion, display_labels=classes)
+    disp.plot()
+    plt.show(block=False)
 
 def interaction(vectorizer, classifier):
     # Start diaglogue
