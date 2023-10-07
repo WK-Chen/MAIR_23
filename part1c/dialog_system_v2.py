@@ -30,27 +30,27 @@ def search_restaurants(data, filter):
     return res
 
 def filter_restaurants(data, filter):
-    if filter['addition'] == "touristic":
+    if filter['addition'][-1] == "touristic":
         res = data[
             (data['food_quality'] == "good") &
             (data['pricerange'] == "cheap") &
             (data['food'] != "romanian")
             ]
-    elif filter['addition'] == "assigned_seats":
+    elif filter['addition'][-1] == "assigned_seats":
         res = data[(data['crowdedness'] == "busy")]
-    elif filter['addition'] == "children":
-        res = data[(data['length_of_stay'] == "long")]
-    elif filter['addition'] == "romantic":
+    elif filter['addition'][-1] == "children":
+        res = data[(data['length_of_stay'] != "long")]
+    elif filter['addition'][-1] == "romantic":
         res = data[
             (data['crowdedness'] != "busy") &
             (data['length_of_stay'] == "long")
             ]
-    elif filter['addition'] in ["good", "bad"]:
-        res = data[(data['food_quality'] == filter['addition'])]
-    elif filter['addition'] in ["busy", "leisure"]:
-        res = data[(data['crowdedness'] == filter['addition'])]
-    elif filter['addition'] in ["short", "long"]:
-        res = data[(data['length_of_stay'] == filter['addition'])]
+    elif filter['addition'][-1] in ["good", "bad"]:
+        res = data[(data['food_quality'] == filter['addition'][-1])]
+    elif filter['addition'][-1] in ["busy", "leisure"]:
+        res = data[(data['crowdedness'] == filter['addition'][-1])]
+    elif filter['addition'][-1] in ["short", "long"]:
+        res = data[(data['length_of_stay'] == filter['addition'][-1])]
     else:
         return data
     return res
@@ -110,7 +110,8 @@ class Dialog:
             {'trigger': 'forward', 'source': 'addition_confirm', 'dest': 'filter_recommend'},
             {'trigger': 'backward', 'source': 'addition_confirm', 'dest': 'ask_addition'},
 
-            {'trigger': 'success', 'source': 'filter_recommend', 'dest': 'give_recommend', 'before': 'set_delay'},
+            # {'trigger': 'success', 'source': 'filter_recommend', 'dest': 'give_recommend', 'before': 'set_delay'},
+            {'trigger': 'success', 'source': 'filter_recommend', 'dest': 'ask_addition', 'before': 'set_delay'},
             {'trigger': 'failure', 'source': 'filter_recommend', 'dest': 'ask_reset', 'before': 'set_delay'},
 
             {'trigger': 'success', 'source': 'ask_reset', 'dest': 'ask_addition'},
@@ -135,7 +136,7 @@ class Dialog:
 
         # Load data, Initialize filter, first search, recommend list and filter list
         self.restaurants = restaurants
-        self.filter = {"area": "", "price_range": "", "food_type": "", "addition": ""}
+        self.filter = {"area": "", "price_range": "", "food_type": "", "addition": []}
         self.first_time = True
         self.recommend_list = pd.DataFrame()
         self.filter_list = pd.DataFrame()
@@ -154,8 +155,8 @@ class Dialog:
         return message, act
 
     def set_delay(self):
-        print("Now searching ...")
         if self.delay:
+            print("Now searching ...")
             time.sleep(3)
     def capitalize(self, input):
         return input.upper() if self.caps else input
@@ -163,14 +164,16 @@ class Dialog:
 
     def print_restaurant(self, data, detail=False):
         info = f"I recommend {data[0]}, it is an {data[1]} {data[3]} restaurant in the {data[2]} of town."
-        if self.filter['addition'] in ["good", "bad"]:
-            addition = f"It is a restaurant in {self.filter['addition']} food quality."
-        elif self.filter['addition'] in ["busy", "leisure"]:
-            addition = f"It is a {self.filter['addition']} restaurant."
-        elif self.filter['addition'] in ["short", "long"]:
-            addition = f"It is a {self.filter['addition']} stay restaurant."
-        else:
-            addition = "It is a {self.filter['addition']} restaurant."
+        addition = ""
+        for feature in self.filter['addition']:
+            if feature in ["good", "bad"]:
+                addition = f"It is a restaurant in {feature} food quality. "
+            elif feature in ["busy", "leisure"]:
+                addition = f"It is a {feature} restaurant. "
+            elif feature in ["short", "long"]:
+                addition = f"It is a {feature} stay restaurant. "
+            else:
+                addition = f"It is a {feature} restaurant. "
         details = (f"According to your requirement. {addition}\n"
                    f"The food quality there is {data[7]}. The restaurant is {data[8]}. "
                    f"The time to stay in the restaurant is {data[9]}.\n"
@@ -290,14 +293,14 @@ class Dialog:
             self.recommend_list = search_restaurants(self.restaurants, self.filter)
             self.filter_list = self.recommend_list
             self.first_time = False
-        # print(self.recommend_list)
+        print(self.recommend_list)
         if len(self.recommend_list):
             self.status = "success"
         else:
             self.status = "failure"
 
     def on_enter_ask_addition(self):
-        print("Do you have additional requirements? (enter no to skip)")
+        print("Do you have additional requirements? (enter no to show recommendation)")
         message, act = self.get_user_input()
         if act == 'negate':
             self.status = "skip"
@@ -305,7 +308,7 @@ class Dialog:
         closest_key, min_distance = find_nearest_keyword(message, additional)
         if closest_key in additional and min_distance == 0:
             self.status = "forward"
-            self.filter['addition'] = closest_key
+            self.filter['addition'].append(closest_key)
         elif closest_key in additional and min_distance < 3:
             self.status = "confirm"
             self.confirm_text = closest_key
@@ -317,23 +320,34 @@ class Dialog:
         message, act = self.get_user_input()
         if act == 'affirm':
             self.status = "forward"
-            self.filter['addition'] = self.confirm_text
+            self.filter['addition'].append(self.confirm_text)
         else:
             self.status = "backward"
 
     def on_enter_filter_recommend(self):
-        self.filter_list = filter_restaurants(self.recommend_list, self.filter)
-        # print(self.filter_list)
+        self.filter_list = filter_restaurants(self.filter_list, self.filter)
+        print(self.filter_list)
         if len(self.filter_list):
             self.status = "success"
         else:
             self.status = "failure"
 
+    def check_contradiction(self):
+        if self.filter["food_type"] == "romanian" and "touristic" in self.filter["addition"]:
+            print("It is impossible for a restaurant to provide romanian food and preferred by touristic at the same time!")
+        if "long" in self.filter["addition"] and "children" in self.filter["addition"]:
+            print("It is impossible for a restaurant to stay long and preferred by children at the same time!")
+        if "busy" in self.filter["addition"] and "romantic" in self.filter["addition"]:
+            print("It is impossible for a restaurant to be busy and be romantic at the same time!")
+
     def on_enter_ask_reset(self):
+        self.check_contradiction()
         print("No recommendation exist! Do you want to reset the additional requirement?")
         message, act = self.get_user_input()
         if act == 'affirm':
             self.status = "success"
+            self.filter_list = self.recommend_list
+            self.filter['addition'] = []
         else:
             self.status = "failure"
 
