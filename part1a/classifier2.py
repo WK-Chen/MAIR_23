@@ -1,7 +1,11 @@
 import os
 import sys
+
 sys.path.append(os.getcwd())
 
+import matplotlib.pyplot as plt
+from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, average_precision_score, confusion_matrix, f1_score, \
+    precision_score, recall_score
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -10,6 +14,9 @@ from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
 from utils.utils import *
+
+classes = ['ack', 'affirm', 'bye', 'confirm', 'deny', 'hello', 'inform', 'negate', 'null',
+           'repeat', 'reqalts', 'reqmore', 'request', 'restart', 'thankyou']
 
 # turn label to number
 label_to_seq = {
@@ -31,6 +38,7 @@ label_to_seq = {
 }
 
 seq_to_label = {v: k for k, v in label_to_seq.items()}
+
 
 class DSTCDataset(Dataset):
     def __init__(self, path, tokenizer, dataset='trn'):
@@ -66,6 +74,7 @@ class DSTCDataset(Dataset):
         }
 
         return inputs
+
 
 def train(path, model):
     # Define hyperparameters
@@ -105,6 +114,7 @@ def train(path, model):
     model.save_pretrained(os.path.join(root_path, "models/trained_bert"))
     return model
 
+
 def evaluate(path, model):
     # Define hyperparameters
     batch_size = 16
@@ -113,6 +123,8 @@ def evaluate(path, model):
     validation_dataset = DSTCDataset(path, tokenizer, 'test')
     validation_loader = DataLoader(validation_dataset, batch_size=batch_size)
 
+    predicts = []
+    labels = []
     # Validation loop
     model.eval()
     with torch.no_grad():
@@ -121,15 +133,35 @@ def evaluate(path, model):
         for batch in tqdm(validation_loader):
             input_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
-            labels = batch['label'].to(device)
+            label = batch['label'].to(device)
 
             outputs = model(input_ids, attention_mask=attention_mask)
-            predicted = torch.argmax(outputs.logits, dim=1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
+            predict = torch.argmax(outputs.logits, dim=1)
+            predicts.extend([seq_to_label[p] for p in predict.tolist()])
+            labels.extend([seq_to_label[l] for l in label.tolist()])
+            # total += labels.size(0)
+            # correct += (predicted == labels).sum().item()
 
-        accuracy = correct / total
-        print(f"Validation Accuracy: {accuracy:.4f}")
+    # accuracy = correct / total
+    # print(f"Validation Accuracy: {accuracy:.4f}")
+    # Print evaluation metrics
+    print(f"Accuracy on test data: {accuracy_score(labels, predicts)}")
+    print(f"Average precision score: {precision_score(labels, predicts, average='macro', zero_division=1.0)}")
+    print(f"Average recall score: {recall_score(labels, predicts, average='macro', zero_division=1.0)}")
+    print(f"Average F1 score score: {f1_score(labels, predicts, average='macro', zero_division=1.0)}")
+    #
+    # Print Condusion Matrix
+    confusion = confusion_matrix(labels, predicts, labels=classes)
+    disp = ConfusionMatrixDisplay(confusion_matrix=confusion, display_labels=classes)
+    disp.plot()
+    # plt.show(block=False)
+    if "dedup" not in path:
+        plt.title("Figure 1: Confusion Matrix of the dataset with duplicates")
+        plt.savefig('1.png')
+    else:
+        plt.title("Figure 2: Confusion Matrix of the dataset without duplicates")
+        plt.savefig('2.png')
+
 
 def interaction(tokenizer, model):
     # Start diaglogue
@@ -150,6 +182,7 @@ def interaction(tokenizer, model):
         predicted = torch.argmax(outputs.logits, dim=1)
         print(predicted)
         print(seq_to_label[predicted])
+
 
 if __name__ == '__main__':
     root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -32,9 +32,9 @@ def evaluate(vectorizer, classifier, X_test, y_test, classes,path):
     print(f"Average precision score: {precision_score(y_test, y_predicted, average='macro', zero_division=1.0)}")
     print(f"Average recall score: {recall_score(y_test, y_predicted, average='macro', zero_division=1.0)}")
     print(f"Average F1 score score: {f1_score(y_test, y_predicted, average='macro', zero_division=1.0)}")
-    
+
     # Print Condusion Matrix
-    confusion = confusion_matrix(y_test, y_predicted, labels=classes)
+    confusion = confusion_matrix(y_test.tolist(), y_predicted, labels=classes)
     disp = ConfusionMatrixDisplay(confusion_matrix=confusion, display_labels=classes)
     disp.plot()
     # plt.show(block=False)
@@ -60,7 +60,7 @@ def predict(utterance : str, classifier, vectorizer):
 if __name__ == "__main__":
     # Get the dataset
     root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_path = os.path.join(root_path, sys.argv[1])
+    data_path = os.path.join(root_path, "data/dialog_acts.csv")
     data_path_dedup = os.path.join(root_path, "data/dialog_acts_dedup.csv")
 
     # Make it into train-test sets
