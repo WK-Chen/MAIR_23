@@ -23,7 +23,7 @@ def train(vectorizer, classifier, X_train, y_train):
     return classifier
 
 
-def evaluate(vectorizer, classifier, X_test, y_test, classes):
+def evaluate(vectorizer, classifier, X_test, y_test, classes,path):
     X_test = vectorizer.transform(X_test)
     y_predicted = classifier.predict(X_test)
 
@@ -37,7 +37,13 @@ def evaluate(vectorizer, classifier, X_test, y_test, classes):
     confusion = confusion_matrix(y_test, y_predicted, labels=classes)
     disp = ConfusionMatrixDisplay(confusion_matrix=confusion, display_labels=classes)
     disp.plot()
-    plt.show(block=False)
+    # plt.show(block=False)
+    if path == data_path:
+        plt.figure(1)
+        plt.title("Figure 1: Confusion Matrix of the dataset with duplicates")
+    elif path == data_path_dedup:
+        plt.figure(2)
+        plt.title("Figure 2: Confusion Matrix of the dataset without duplicates")
 
 def interaction(vectorizer, classifier):
     # Start diaglogue
@@ -55,17 +61,34 @@ if __name__ == "__main__":
     # Get the dataset
     root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     data_path = os.path.join(root_path, sys.argv[1])
-    
+    data_path_dedup = os.path.join(root_path, "data/dialog_acts_dedup.csv")
+
     # Make it into train-test sets
     X_train, X_test, y_train, y_test = split_dataset_pd(data_path)
 
     # Create and train classifier
     vectorizer = CountVectorizer()
     classifier = KNeighborsClassifier(3)
+
     classifier = train(vectorizer, classifier, X_train, y_train)
 
-    # Evaluate performace
-    evaluate(vectorizer, classifier, X_test, y_test, classifier.classes_)
+    # # Evaluate performace
+    # evaluate(vectorizer, classifier, X_test, y_test, classifier.classes_)
 
-    # Predict with user input
-    interaction(vectorizer, classifier)
+    # Run code for both datasets
+    print("complete dataset:")
+    # Make it into train-test sets
+    X_train, X_test, y_train, y_test = split_dataset_pd(data_path)
+    classifier = train(vectorizer, classifier, X_train, y_train)
+    # Evaluate performace
+    evaluate(vectorizer, classifier, X_test, y_test, classifier.classes_, data_path)
+
+    print("deleted duplicates dataset:")
+    X_train_1, X_test_1, y_train_1, y_test_1 = split_dataset_pd(data_path_dedup)
+    classifier = train(vectorizer, classifier, X_train_1, y_train_1)
+    # Evaluate performace
+    evaluate(vectorizer, classifier, X_test_1, y_test_1, classifier.classes_, data_path_dedup)
+    plt.show()
+
+    # # Predict with user input
+    # interaction(vectorizer, classifier)
