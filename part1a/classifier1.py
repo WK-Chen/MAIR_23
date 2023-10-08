@@ -24,8 +24,13 @@ def train(vectorizer, classifier, X_train, y_train):
 
 
 def evaluate(vectorizer, classifier, X_test, y_test, classes,path):
+    _X_test = X_test
     X_test = vectorizer.transform(X_test)
     y_predicted = classifier.predict(X_test)
+
+    # for xt, yt, yp in zip(_X_test, y_test, y_predicted):
+    #     if yt != yp:
+    #         print(f"{xt} | {yt} | {yp}")
 
     # Print evaluation metrics
     print(f"Accuracy on test data: {accuracy_score(y_test, y_predicted)}")

@@ -15,8 +15,7 @@ See baseline1 result by code `python part1a/baseline1.py`
 See baseline1 result by code `python part1a/baseline2.py`
 
 ### Classifier 1
-Train and evaluate classifier by running `python part1a/classifier1.py [DATA_PATH]`. 
-e.g. `python part1a/classifier1.py data/dialog_acts.csv`
+Train and evaluate classifier by running `python part1a/classifier1.py`. 
 
 Users can also input sentences to test the classifier after the evaluation.
 
