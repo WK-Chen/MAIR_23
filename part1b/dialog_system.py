@@ -22,6 +22,7 @@ def prediction(classifier, vectorizer, utterance: str):
     return res
 
 def search_restaurants(data, filter):
+    # lookup function to search restaurants from database
     res = data[
         (data['pricerange'] == filter['price_range']) & (data['area'] == filter['area']) & (
                     data['food'] == filter['food_type'])
