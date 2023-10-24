@@ -379,8 +379,7 @@ class Dialog:
     def on_enter_end(self):
         print("Goodbye!")
 
-
-if __name__ == '__main__':
+def run():
     root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # Set up classifier
     data_path = os.path.join(root_path, "data/dialog_acts.csv")
@@ -402,3 +401,6 @@ if __name__ == '__main__':
         # print(system.state)
         # print(system.status)
         getattr(system, system.status)()
+
+if __name__ == '__main__':
+    run()
