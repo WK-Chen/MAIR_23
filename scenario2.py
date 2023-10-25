@@ -200,7 +200,7 @@ class Dialog:
 
             {'trigger': 'forward', 'source': 'ask_food_type', 'dest': 'check_recommend'},
             {'trigger': 'confirm', 'source': 'ask_food_type', 'dest': 'food_confirm'},
-            {'trigger': 'again', 'source': 'ask_price', 'dest': '='},
+            {'trigger': 'again', 'source': 'ask_food_type', 'dest': '='},
 
             {'trigger': 'forward', 'source': 'food_confirm', 'dest': 'check_recommend'},
             {'trigger': 'backward', 'source': 'food_confirm', 'dest': 'ask_food_type'},
